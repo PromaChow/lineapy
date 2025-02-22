@@ -26,7 +26,7 @@ Pillow==9.1.1
 pre-commit==2.18.1
 psycopg2-binary==2.9.5
 pydantic==1.9.0
-pytest==6.2.5
+pytest
 pytest-alembic==0.8.2
 pytest-cov==3.0.0
 pytest-virtualenv==1.7.0
@@ -38,7 +38,7 @@ scipy==1.7.3
 scour==0.38.2
 seaborn==0.11.2
 SQLAlchemy==1.4.35
-syrupy==1.4.5
+syrupy
 types-mock==4.0.15
 types-PyYAML==6.0.5
 types-requests==2.27.16
