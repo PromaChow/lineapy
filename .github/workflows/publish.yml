@@ -1,16 +1,18 @@
 name: Publish
-
 on:
   push:
     branches:
-      - "v[0-9]+.[0-9]+.x"
-    tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"
-  
+      - main
+
 jobs:
   build-n-publish:
     runs-on: ubuntu-latest
     steps:
+      - name: Start Energy Measurement
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4
+        with:
+          json-output: true
+          task: start-measurement
       - uses: actions/checkout@v2
         with:
           lfs: true
@@ -19,17 +21,54 @@ jobs:
         with:
           python-version: 3.9
       - name: Install dependencies
-        run: |
-          python setup.py install && rm -rf build dist
+        run: 'python setup.py install && rm -rf build dist
+
+          '
+      - id: measurement-4
+        name: Record Measurement After Install dependencies
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4
+        with:
+          json-output: true
+          label: Install dependencies
+          task: get-measurement
       - name: Build Wheels
-        run: |
-          pip install wheel && python setup.py sdist bdist_wheel
+        run: 'pip install wheel && python setup.py sdist bdist_wheel
+
+          '
+      - id: measurement-6
+        name: Record Measurement After Build Wheels
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4
+        with:
+          json-output: true
+          label: Build Wheels
+          task: get-measurement
       - name: Check build
-        run: |
-          pip install twine && twine check dist/*
-      - name: Publish package
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+        run: 'pip install twine && twine check dist/*
+
+          '
+      - id: measurement-8
+        name: Record Measurement After Check build
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4
+        with:
+          json-output: true
+          label: Check build
+          task: get-measurement
+      - if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+        name: Publish package
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
+          user: __token__
+      - id: display-measurement
+        name: Display Energy Results
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4
+        with:
+          json-output: true
+          task: display-results
+      - name: Save Total Energy Consumption Data
+        run: echo '${ steps.final-measurement.outputs.data-total-json }' > total_energy_consumption-1740230992.json
+      - name: Upload Energy Consumption Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: total-energy-consumption
+          path: total_energy_consumption-1740230992.json

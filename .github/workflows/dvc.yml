@@ -1,44 +1,59 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-
 name: DVC
-
 on:
-  workflow_dispatch:
   push:
-    branches: [main]
-    paths:
-      - "lineapy/plugins/jinja_templates/dvc/*"
-      - "lineapy/plugins/jinja_templates/task/*"
-      - "lineapy/plugins/jinja_templates/module/*"
-      - "lineapy/plugins/dvc_pipeline_writer.py"
-      - "lineapy/plugins/base_pipeline_writer.py"
-      - "tests/unit/plugins/framework_specific/dvc/*"
-      - "test_pipeline_dvc_req.txt"
-  pull_request:
-    paths:
-      - "lineapy/plugins/jinja_templates/dvc/*"
-      - "lineapy/plugins/jinja_templates/task/*"
-      - "lineapy/plugins/jinja_templates/module/*"
-      - "lineapy/plugins/dvc_pipeline_writer.py"
-      - "lineapy/plugins/base_pipeline_writer.py"
-      - "tests/unit/plugins/framework_specific/dvc/*"
-      - "test_pipeline_dvc_req.txt"
+    branches:
+      - main
+
 jobs:
   dvc:
     runs-on: ubuntu-latest
     steps:
+      - name: Start Energy Measurement
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4
+        with:
+          json-output: true
+          task: start-measurement
       - uses: actions/checkout@v2
         with:
           lfs: true
-          submodules: "recursive"
+          submodules: recursive
       - name: Set up Python 3.9
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt && python setup.py install && rm -rf build
+        run: 'pip install -r requirements.txt && python setup.py install && rm -rf
+          build
+
+          '
+      - id: measurement-4
+        name: Record Measurement After Install dependencies
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4
+        with:
+          json-output: true
+          label: Install dependencies
+          task: get-measurement
       - name: Test with pytest
-        run: |
-          pytest -vv -m 'dvc'
+        run: 'pytest -vv -m ''dvc''
+
+          '
+      - id: measurement-6
+        name: Record Measurement After Test with pytest
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4
+        with:
+          json-output: true
+          label: Test with pytest
+          task: get-measurement
+      - id: display-measurement
+        name: Display Energy Results
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4
+        with:
+          json-output: true
+          task: display-results
+      - name: Save Total Energy Consumption Data
+        run: echo '${ steps.final-measurement.outputs.data-total-json }' > total_energy_consumption-1740230992.json
+      - name: Upload Energy Consumption Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: total-energy-consumption
+          path: total_energy_consumption-1740230992.json
