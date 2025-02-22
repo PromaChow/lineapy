@@ -102,9 +102,9 @@ benchmark_libs = [
     "scipy",
 ]
 
-# doc_libs = [
-#     "pandoc",
-# ]
+doc_libs = [
+    "pandoc",
+]
 
 typing_libs = [
     "mypy",
