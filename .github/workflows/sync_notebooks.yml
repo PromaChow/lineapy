@@ -17,10 +17,12 @@ jobs:
         with:
           fetch-depth: 0
       - name: Copy demo & tutorial notebooks to top level .colab folder
-        run: rm -rf .colab/ && mkdir -p .colab/ && cp -R examples/use_cases/* .colab/
+        run:
+          rm -rf .colab/ && mkdir -p .colab/ && cp -R examples/use_cases/* .colab/
           && cp -R examples/tutorials/* .colab/
       - id: measurement-3
-        name: Record Measurement After Copy demo & tutorial notebooks to top level
+        name:
+          Record Measurement After Copy demo & tutorial notebooks to top level
           .colab folder
         uses: green-coding-solutions/eco-ci-energy-estimation@v4
         with:
@@ -42,11 +44,13 @@ jobs:
           label: Copy tutorial notebooks to docs
           task: get-measurement
       - name: Regex out the NBVAL_SKIP and NBVAL_IGNORE_OUTPUT comments
-        run: "cd .colab/ \nfind ./ -type f -name \"*.ipynb\" -exec sed -i 's/\\#[\\\
+        run:
+          "cd .colab/ \nfind ./ -type f -name \"*.ipynb\" -exec sed -i 's/\\#[\\\
           \ ]*NBVAL_SKIP//g' {} \\;\nfind ./ -type f -name \"*.ipynb\" -exec sed -i\
           \ 's/\\#[\\ ]*NBVAL_IGNORE_OUTPUT//g' {} \\;\n"
       - id: measurement-7
-        name: Record Measurement After Regex out the NBVAL_SKIP and NBVAL_IGNORE_OUTPUT
+        name:
+          Record Measurement After Regex out the NBVAL_SKIP and NBVAL_IGNORE_OUTPUT
           comments
         uses: green-coding-solutions/eco-ci-energy-estimation@v4
         with:
@@ -77,7 +81,7 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           branch: ${{ github.ref }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.TOKEN_GITHUB }}
       - id: display-measurement
         name: Display Energy Results
         uses: green-coding-solutions/eco-ci-energy-estimation@v4
