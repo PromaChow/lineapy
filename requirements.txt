@@ -31,7 +31,7 @@ pytest-alembic==0.8.2
 pytest-cov==3.0.0
 pytest-virtualenv==1.7.0
 pytest-xdist==2.5.0
-requests==2.27.1
+requests
 rich==12.2.0
 scikit-learn==1.0.2
 scipy==1.7.3
